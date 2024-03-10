@@ -6,6 +6,7 @@ import server.message.MessagePacketData;
 import shared.users.User;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class Server {
@@ -22,7 +23,6 @@ public class Server {
     }
 
     private void onMessage(Connection connection, MessagePacketData messagePacketData) {
-        System.out.println("Handling new message");
         switch (messagePacketData.messageType()) {
             case "requestLoggedUsers" -> {
                 var users = this.connectedUsers.values().stream().map(User::nickName).toList();
@@ -40,31 +40,46 @@ public class Server {
         }
     }
 
-    private void onConnection(Connection connection) {
+    private void onConnection(Connection messaggingConnection) {
         ConnectionPacketData data;
         try {
-            data = connection.read();
+            data = messaggingConnection.read();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        var user = new User(connection, data.nickName());
-
-        if (this.connectedUsers.containsKey(user.nickName())) {
+        if (this.connectedUsers.containsKey(data.nickName())) {
             try {
-                connection.send(false);
+                messaggingConnection.send(false);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
-                connection.close();
+                messaggingConnection.close();
             }
         }
-        this.connectedUsers.put(user.nickName(), user);
         try {
-            connection.send(true);
+            messaggingConnection.send(true);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            connection.close();
+            messaggingConnection.close();
         }
+
+        Connection notificationConnection;
+        Socket notificationSocket;
+        try {
+            notificationSocket = new Socket(messaggingConnection.netAddress(), 9469);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            notificationConnection = new Connection(notificationSocket);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        var user = new User(messaggingConnection, notificationConnection, data.nickName());
+        this.connectedUsers.put(data.nickName(), user);
+
+
+
     }
 
     public void start() {

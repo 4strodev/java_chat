@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.UUID;
 
 public class Connection {
-    public final String id = UUID.randomUUID().toString();
     public final Socket socket;
     public final ObjectInputStream in;
     public final ObjectOutputStream out;
@@ -22,6 +21,10 @@ public class Connection {
         if (in == null) {
             throw new Exception("Error getting input stream");
         }
+    }
+
+    public String netAddress() {
+        return this.socket.getInetAddress().getHostAddress();
     }
 
     public ObjectOutputStream getObjectOutputStream() {
@@ -57,7 +60,6 @@ public class Connection {
             this.in.close();
             this.socket.close();
         } catch (IOException exception) {
-            System.out.printf("Error closing socket of connection with id %s\n", this.id);
             System.out.println(exception.getMessage());
         }
     }

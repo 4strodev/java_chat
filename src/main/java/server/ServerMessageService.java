@@ -7,6 +7,7 @@ import server.message.OnMessageCallback;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +15,6 @@ import java.util.concurrent.Executors;
 
 public class ServerMessageService {
     private ServerSocket serverSocket;
-    private final ConnectionsPool pool = new ConnectionsPool();
     private final ExecutorService executorService;
     private final HashMap<String, OnConnectionCallback> connectionCallbacks = new HashMap<>();
     private final HashMap<String, OnMessageCallback> messageCallbacks = new HashMap<>();
@@ -39,23 +39,23 @@ public class ServerMessageService {
 
             for (var callback : messageCallbacks.values()) {
                 System.out.println("Executing callback");
-                callback.handleMessage(connection, messagePacketData);
+                try {
+                    callback.handleMessage(connection, messagePacketData);
+                } catch (Exception e) {
+                    connection.close();
+                    return;
+                }
             }
         }
-    }
-
-    public void sendTo(String connectionId, MessagePacketData message) throws IOException {
-        Connection connection = this.pool.getConnection(connectionId);
-        connection.send(message);
     }
 
     public void start() throws Exception {
         this.serverSocket = new ServerSocket(9468);
         while (true) {
-            final var socket = this.serverSocket.accept();
-            var connection = new Connection(socket);
-            this.pool.addConnection(connection);
-            this.executorService.execute(() -> this.startEventLoop(connection));
+            final var messaggingSocket = this.serverSocket.accept();
+            var messaggingConnection = new Connection(messaggingSocket);
+
+            this.executorService.execute(() -> this.startEventLoop(messaggingConnection));
         }
     }
 

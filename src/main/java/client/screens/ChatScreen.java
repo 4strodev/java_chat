@@ -18,7 +18,7 @@ public class ChatScreen extends Component {
 
     @Override
     public void onStart(ClientApp app) {
-        // Establish connection
+        // Establish messaggingConnection
         try {
             var connected = clientMessaging.connect(userStore.snapshotOnly((state) -> state.nickname));
             if (!connected) {
@@ -46,8 +46,6 @@ public class ChatScreen extends Component {
         splitPane.add(new ChatPane());
 
         this.add(splitPane, constraints);
-
-        JOptionPane.showMessageDialog(this, "Connected successfully!");
     }
 
     @Override
