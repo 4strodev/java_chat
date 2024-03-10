@@ -1,6 +1,6 @@
 package server;
 
-import server.connection.Connection;
+import shared.connection.Connection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,5 +22,8 @@ public class ConnectionsPool {
 
     public List<Connection> getConnections() {
         return new ArrayList<>(this._internalPool.values());
+    }
+    public Connection getConnection(String id) {
+        return this._internalPool.get(id);
     }
 }

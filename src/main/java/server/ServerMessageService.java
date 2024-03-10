@@ -1,14 +1,11 @@
 package server;
 
-import server.connection.Connection;
-import server.connection.ConnectionPacketData;
+import shared.connection.Connection;
 import server.connection.OnConnectionCallback;
 import server.message.MessagePacketData;
 import server.message.OnMessageCallback;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.UUID;
@@ -45,6 +42,11 @@ public class ServerMessageService {
                 callback.handleMessage(connection, messagePacketData);
             }
         }
+    }
+
+    public void sendTo(String connectionId, MessagePacketData message) throws IOException {
+        Connection connection = this.pool.getConnection(connectionId);
+        connection.send(message);
     }
 
     public void start() throws Exception {

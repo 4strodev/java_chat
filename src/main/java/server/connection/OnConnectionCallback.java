@@ -1,9 +1,6 @@
 package server.connection;
 
-import server.connection.Connection;
-import server.connection.ConnectionPacketData;
-
-import java.io.IOException;
+import shared.connection.Connection;
 
 @FunctionalInterface
 public interface OnConnectionCallback {

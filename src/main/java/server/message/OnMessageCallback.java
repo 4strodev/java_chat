@@ -1,6 +1,6 @@
 package server.message;
 
-import server.connection.Connection;
+import shared.connection.Connection;
 
 @FunctionalInterface
 public interface OnMessageCallback {

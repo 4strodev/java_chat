@@ -1,7 +1,7 @@
 package client;
 
-import server.connection.Connection;
-import server.connection.ConnectionPacketData;
+import shared.connection.Connection;
+import shared.connection.ConnectionPacketData;
 import server.message.MessagePacketData;
 
 import java.io.IOException;

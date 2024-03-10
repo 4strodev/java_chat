@@ -1,4 +1,4 @@
-package server.connection;
+package shared.connection;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

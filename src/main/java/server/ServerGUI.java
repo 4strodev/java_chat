@@ -1,8 +1,6 @@
 package server;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import server.connection.Connection;
-import server.connection.ConnectionPacketData;
 
 import javax.swing.*;
 import java.awt.*;

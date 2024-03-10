@@ -1,12 +1,11 @@
 package server;
 
-import server.connection.Connection;
-import server.connection.ConnectionPacketData;
+import shared.connection.Connection;
+import shared.connection.ConnectionPacketData;
 import server.message.MessagePacketData;
 import shared.users.User;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 public class Server {

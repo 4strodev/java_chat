@@ -1,7 +1,7 @@
 package shared.messages;
 
 
-import server.connection.ConnectionPacketData;
+import shared.connection.ConnectionPacketData;
 
 import java.io.Serializable;
 
