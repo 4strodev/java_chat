@@ -26,6 +26,9 @@ public class Connection {
     public String netAddress() {
         return this.socket.getInetAddress().getHostAddress();
     }
+    public int getPort() {
+        return this.socket.getPort();
+    }
 
     public ObjectOutputStream getObjectOutputStream() {
         try {

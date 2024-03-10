@@ -1,12 +1,13 @@
 package server;
 
+import server.message.MessagePacketData;
 import shared.connection.Connection;
 import shared.connection.ConnectionPacketData;
-import server.message.MessagePacketData;
 import shared.users.User;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Server {
@@ -22,9 +23,20 @@ public class Server {
         this.messageService.onMessage(this::onMessage);
     }
 
+    public void broadcast(MessagePacketData data) {
+        for (var user : this.connectedUsers.values()) {
+            try {
+                user.notificationsConnection().send(data);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private void onMessage(Connection connection, MessagePacketData messagePacketData) {
+        System.out.println("New message from server");
         switch (messagePacketData.messageType()) {
-            case "requestLoggedUsers" -> {
+            case MessagePacketData.CLIENT_REQUEST_CONNECTED_USERS -> {
                 var users = this.connectedUsers.values().stream().map(User::nickName).toList();
                 try {
                     connection.send(users);
@@ -32,6 +44,8 @@ public class Server {
                     System.out.println(e.getMessage());
                     connection.close();
                 }
+                System.out.println("Server: user list updated");
+                this.broadcast(new MessagePacketData(MessagePacketData.SERVER_USER_LIST_UPDATED, new ArrayList<>(users)));
             }
             default -> {
                 System.out.println("Unexpected message type");
@@ -66,7 +80,7 @@ public class Server {
         Connection notificationConnection;
         Socket notificationSocket;
         try {
-            notificationSocket = new Socket(messaggingConnection.netAddress(), 9469);
+            notificationSocket = new Socket(messaggingConnection.netAddress(), data.port());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,7 +91,6 @@ public class Server {
         }
         var user = new User(messaggingConnection, notificationConnection, data.nickName());
         this.connectedUsers.put(data.nickName(), user);
-
 
 
     }

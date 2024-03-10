@@ -1,8 +1,14 @@
 package client.store;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChatStoreValues {
-    ArrayList<String> availableNicks = new ArrayList<>();
-    String selectedChat = "";
+    public final ArrayList<String> chatList = new ArrayList<>();
+    public String selectedChat = "";
+
+    public void setChatList(List<String> chatList) {
+        this.chatList.clear();
+        this.chatList.addAll(chatList);
+    }
 }

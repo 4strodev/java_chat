@@ -17,6 +17,7 @@ public class ClientMessagingService {
     private Connection messaggingConnection;
     private Connection notificationsConnection;
     private HashMap<String, OnMessageCallback> messageCallbacks = new HashMap<>();
+    private ServerSocket serverSocket;
 
     protected ClientMessagingService() {
     }
@@ -40,6 +41,7 @@ public class ClientMessagingService {
     }
 
     public boolean connect(String nickname) throws Exception {
+        this.serverSocket = new ServerSocket(0);
         // Start event loop
         this.startEventLoop();
 
@@ -50,7 +52,7 @@ public class ClientMessagingService {
         var socket = new Socket("localhost", 9468);
         this.messaggingConnection = new Connection(socket);
 
-        this.messaggingConnection.send(new ConnectionPacketData(nickname));
+        this.messaggingConnection.send(new ConnectionPacketData(nickname, this.serverSocket.getLocalPort()));
         boolean connected = this.messaggingConnection.read();
         if (!connected) {
             this.messaggingConnection.close();
@@ -60,10 +62,9 @@ public class ClientMessagingService {
         return connected;
     }
 
-    private void startEventLoop() throws Exception {
+    private void startEventLoop() {
         new Thread(() -> {
             try {
-                ServerSocket serverSocket = new ServerSocket(9469);
                 Socket socket = serverSocket.accept();
                 notificationsConnection = new Connection(socket);
             } catch (Exception e) {
@@ -92,7 +93,8 @@ public class ClientMessagingService {
     }
 
     public List<String> getConnectedUsers() throws IOException, ClassNotFoundException {
-        this.messaggingConnection.send(new MessagePacketData("requestLoggedUsers", null));
+        System.out.println("Getting connected users");
+        this.messaggingConnection.send(new MessagePacketData(MessagePacketData.CLIENT_REQUEST_CONNECTED_USERS, null));
         return this.messaggingConnection.read();
     }
 
