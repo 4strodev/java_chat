@@ -1,13 +1,13 @@
 package client;
 
-import client.screens.ScreenStart;
+import client.screens.Component;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
 
 public class ClientApp {
     private JFrame window;
-    private JPanel currentScreen;
+    private Component currentScreen;
 
     public ClientApp() {
         FlatLightLaf.setup();
@@ -24,21 +24,17 @@ public class ClientApp {
         this.window.setVisible(true);
     }
 
-    public void applyLifeCycleHooks(JPanel panel) {
-        if (panel instanceof ScreenStart) {
-            ((ScreenStart) panel).onStart(this);
-        }
-    }
-
     public JFrame getWindow() {
         return this.window;
     }
 
-    public void setCurrentScreen(JPanel panel) {
-        this.window.getContentPane().removeAll();
-        this.window.getContentPane().add(panel);
+    public void setCurrentScreen(Component panel) {
+        if (this.currentScreen != null) {
+            this.currentScreen.onDestroy(this);
+        }
         this.currentScreen = panel;
-        this.applyLifeCycleHooks(this.currentScreen);
+        this.window.setContentPane(panel);
+        this.currentScreen.onStart(this);
         this.window.revalidate();
     }
 }

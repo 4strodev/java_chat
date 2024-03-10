@@ -6,7 +6,7 @@ import client.store.UserStore;
 import javax.swing.*;
 import java.awt.*;
 
-public class NickNameFormScreen extends JPanel implements ScreenStart {
+public class NickNameFormScreen extends Component {
     UserStore userStore = UserStore.getInstance();
 
     private JTextField nickNameInputField = new JTextField();
@@ -40,5 +40,9 @@ public class NickNameFormScreen extends JPanel implements ScreenStart {
                     JOptionPane.ERROR_MESSAGE
             );
         });
+    }
+
+    @Override
+    public void onDestroy(ClientApp app) {
     }
 }

@@ -9,7 +9,7 @@ import client.store.UserStore;
 import javax.swing.*;
 import java.awt.*;
 
-public class ChatScreen extends JPanel implements ScreenStart {
+public class ChatScreen extends Component {
     ClientMessagingService clientMessaging = ClientMessagingService.getInstance();
     UserStore userStore = UserStore.getInstance();
 
@@ -48,5 +48,10 @@ public class ChatScreen extends JPanel implements ScreenStart {
         this.add(splitPane, constraints);
 
         JOptionPane.showMessageDialog(this, "Connected successfully!");
+    }
+
+    @Override
+    public void onDestroy(ClientApp app) {
+
     }
 }
