@@ -1,9 +1,11 @@
 package client;
 
+import client.store.UserStore;
 import server.message.OnMessageCallback;
 import shared.connection.Connection;
 import shared.connection.ConnectionPacketData;
 import server.message.MessagePacketData;
+import shared.messages.SendMessageData;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -96,6 +98,12 @@ public class ClientMessagingService {
         System.out.println("Getting connected users");
         this.messaggingConnection.send(new MessagePacketData(MessagePacketData.CLIENT_REQUEST_CONNECTED_USERS, null));
         return this.messaggingConnection.read();
+    }
+
+    public void sendMessage(String who, String message) throws IOException {
+        var nickName = UserStore.getInstance().snapshotOnly(state -> state.nickname);
+        var messagePacketData = new MessagePacketData(MessagePacketData.CLIENT_NEW_MESSAGE, new SendMessageData(who, message, nickName));
+        this.messaggingConnection.send(messagePacketData);
     }
 
     public void disconnect() {

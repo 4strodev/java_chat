@@ -14,6 +14,7 @@ class ServerGUI extends JFrame {
     public ServerGUI(Server server) {
         this.server = server;
 
+
         // Setting theme
         FlatLightLaf.setup();
         // Set the window size
@@ -31,6 +32,8 @@ class ServerGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Setting window visible
         setVisible(true);
+
+        this.server.setLogger((String message) -> this.areatext.append("LOG: " + message + "\n"));
     }
 
     /**

@@ -4,6 +4,7 @@ import client.screens.Component;
 import client.store.ChatsStore;
 import com.formdev.flatlaf.FlatLightLaf;
 import server.message.MessagePacketData;
+import shared.messages.SendMessageData;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -26,10 +27,16 @@ public class ClientApp {
         ClientMessagingService.getInstance().onMessage((connection, messagePacketData) -> {
             switch (messagePacketData.messageType()) {
                 case MessagePacketData.SERVER_USER_LIST_UPDATED -> {
-                    System.out.println("User list updated");
                     var state = this.chatsStore.snapshot();
                     ArrayList<String> chatList = (ArrayList<String>) messagePacketData.data();
                     state.setChatList(chatList);
+                    this.chatsStore.setState(state);
+                }
+                case MessagePacketData.CLIENT_NEW_MESSAGE -> {
+                    System.out.println("New message!!!");
+                    var messageData = (SendMessageData) messagePacketData.data();
+                    var state = ChatsStore.getInstance().snapshot();
+                    state.addMessage(messageData.sender(), messageData.sender() + ": " + messageData.message());
                     this.chatsStore.setState(state);
                 }
             }

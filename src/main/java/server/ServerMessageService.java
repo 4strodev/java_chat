@@ -29,7 +29,6 @@ public class ServerMessageService {
         }
 
         while (true) {
-            System.out.println("Reading messages");
             MessagePacketData messagePacketData;
             try {
                 messagePacketData = connection.read();
@@ -38,7 +37,6 @@ public class ServerMessageService {
             }
 
             for (var callback : messageCallbacks.values()) {
-                System.out.println("Executing callback");
                 try {
                     callback.handleMessage(connection, messagePacketData);
                 } catch (Exception e) {
