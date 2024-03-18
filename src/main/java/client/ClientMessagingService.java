@@ -45,7 +45,7 @@ public class ClientMessagingService {
     public boolean connect(String nickname) throws Exception {
         this.serverSocket = new ServerSocket(0);
         // Start event loop
-        this.startEventLoop();
+        this.startNotificationServer();
 
         if (this.messaggingConnection != null) {
             throw new Exception("Connection already established");
@@ -64,7 +64,7 @@ public class ClientMessagingService {
         return connected;
     }
 
-    private void startEventLoop() {
+    private void startNotificationServer() {
         new Thread(() -> {
             try {
                 Socket socket = serverSocket.accept();
@@ -95,7 +95,6 @@ public class ClientMessagingService {
     }
 
     public List<String> getConnectedUsers() throws IOException, ClassNotFoundException {
-        System.out.println("Getting connected users");
         this.messaggingConnection.send(new MessagePacketData(MessagePacketData.CLIENT_REQUEST_CONNECTED_USERS, null));
         return this.messaggingConnection.read();
     }

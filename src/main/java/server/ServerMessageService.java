@@ -40,6 +40,7 @@ public class ServerMessageService {
                 try {
                     callback.handleMessage(connection, messagePacketData);
                 } catch (Exception e) {
+                    System.out.println(e.getMessage());
                     connection.close();
                     return;
                 }

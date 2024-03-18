@@ -32,7 +32,7 @@ public class ClientApp {
                     state.setChatList(chatList);
                     this.chatsStore.setState(state);
                 }
-                case MessagePacketData.CLIENT_NEW_MESSAGE -> {
+                case MessagePacketData.SERVER_NEW_INCOMING_MESSAGE -> {
                     System.out.println("New message!!!");
                     var messageData = (SendMessageData) messagePacketData.data();
                     var state = ChatsStore.getInstance().snapshot();

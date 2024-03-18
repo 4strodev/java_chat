@@ -55,9 +55,11 @@ public class Server {
             case MessagePacketData.CLIENT_NEW_MESSAGE -> {
                 // TODO send message to desired client
                 var messageData = (SendMessageData) messagePacketData.data();
+                this.logger.log("New message from: " + messageData.sender());
+                System.out.println(messageData);
                 var user = connectedUsers.get(messageData.who());
                 if (user == null) {
-                    return;
+                    throw new RuntimeException("User not found");
                 }
 
                 try {
@@ -69,6 +71,7 @@ public class Server {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                logger.log(String.format("Message from %s sent to %s", messageData.sender(), messageData.who()));
             }
             default -> {
                 System.out.println("Unexpected message type");
@@ -126,5 +129,6 @@ public class Server {
             }
         });
         thread.start();
+        System.out.println("Server listening: ");
     }
 }
