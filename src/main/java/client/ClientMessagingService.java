@@ -80,7 +80,8 @@ public class ClientMessagingService {
                 try {
                     messagePacketData = this.notificationsConnection.read();
                 } catch (IOException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
+                    System.out.println(e.getMessage());
+                    return;
                 }
 
                 for (var callback : messageCallbacks.values()) {
@@ -114,6 +115,12 @@ public class ClientMessagingService {
     }
 
     public void disconnect() {
+        try {
+            var nickname = UserStore.getInstance().snapshotOnly(state -> state.nickname);
+            this.messaggingConnection.send(new MessagePacketData(MessageType.CLIENT_DISCONNECT, nickname));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.messaggingConnection.close();
         this.notificationsConnection.close();
     }

@@ -34,6 +34,7 @@ public class Server {
 
     public void broadcast(MessagePacketData data) {
         for (var user : this.connectedUsers.values()) {
+            System.out.println("Sending message to: " + user.nickName());
             try {
                 user.notificationsConnection().send(data);
             } catch (IOException e) {
@@ -76,22 +77,19 @@ public class Server {
             case MessageType.CLIENT_BROADCAST_MESSAGE -> {
                 var messageData = (BroadcastMessageData) messagePacketData.data();
                 this.logger.log("New message from: " + messageData.sender());
-                for(var user : connectedUsers.values()) {
-                    if (user.nickName().equals(messageData.sender())) {
-                        continue;
-                    }
 
-                    try {
-                        user.notificationsConnection()
-                                .send(new MessagePacketData(
-                                        MessageType.SERVER_NEW_BROADCAST_MESSAGE,
-                                        messageData
-                                ));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    logger.log(String.format("Message from %s sent to %s", messageData.sender(), user.nickName()));
-                }
+                this.broadcast(new MessagePacketData(
+                        MessageType.SERVER_NEW_BROADCAST_MESSAGE,
+                        messageData
+                ));
+            }
+            case MessageType.CLIENT_DISCONNECT -> {
+                var who = (String) messagePacketData.data();
+                System.out.println(who + ": Disconnected");
+                this.logger.log(who + ": Disconnected");
+                this.connectedUsers.remove(who);
+                var users = connectedUsers.values().stream().map(User::nickName).toList();
+                this.broadcast(new MessagePacketData(MessageType.SERVER_USER_LIST_UPDATED, new ArrayList<>(users)));
             }
             default -> {
                 System.out.println("Unexpected message type");

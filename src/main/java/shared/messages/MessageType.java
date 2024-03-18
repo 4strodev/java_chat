@@ -7,6 +7,8 @@ public class MessageType {
     public static final String CLIENT_NEW_MESSAGE = "CLIENT_NEW_MESSAGE";
     public static final String CLIENT_BROADCAST_MESSAGE = "CLIENT_BROADCAST_MESSAGE";
     public static final String SERVER_NEW_BROADCAST_MESSAGE = "SERVER_NEW_BROADCAST_MESSAGE";
+    public static final String CLIENT_DISCONNECT = "CLIENT_DISCONNECT";
+    public static final String SERVER_ALERT = "SERVER_ALERT";
     protected MessageType() {
     }
 }

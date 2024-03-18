@@ -22,6 +22,7 @@ public class ClientApp {
 
     public void init() {
         this.window = new JFrame("Client chat");
+        this.window.addWindowListener(new CloseWindowHandler());
         this.window.setSize(1600, 900);
         this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.window.setLocationRelativeTo(null);
@@ -29,6 +30,7 @@ public class ClientApp {
         ClientMessagingService.getInstance().onMessage((connection, messagePacketData) -> {
             switch (messagePacketData.messageType()) {
                 case MessageType.SERVER_USER_LIST_UPDATED -> {
+                    System.out.println("User list updated");
                     var state = this.chatsStore.snapshot();
                     ArrayList<String> chatList = (ArrayList<String>) messagePacketData.data();
                     state.setChatList(chatList);
@@ -45,6 +47,10 @@ public class ClientApp {
                     var state = ChatsStore.getInstance().snapshot();
                     state.addMessage(messageData.sender(), messageData.sender() + ": " + messageData.message());
                     this.chatsStore.setState(state);
+                }
+                case MessageType.SERVER_ALERT -> {
+                    var messageData = (String) messagePacketData.data();
+                    JOptionPane.showMessageDialog(this.window, messageData);
                 }
             }
         });

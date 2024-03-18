@@ -32,7 +32,8 @@ public class ServerMessageService {
             try {
                 messagePacketData = connection.read();
             } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                System.out.println(e.getMessage());
+                return;
             }
 
             for (var callback : messageCallbacks.values()) {

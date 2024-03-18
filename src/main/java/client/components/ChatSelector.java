@@ -37,7 +37,6 @@ public class ChatSelector extends JPanel {
             var selectedChat = chatsStore.snapshotOnly(state -> state.chatList.stream().filter(nick -> !nick.equals(whoami)).toList().get(selectedIndex));
             var state = chatsStore.snapshot();
             state.selectedChat = selectedChat;
-            System.out.println(state.chatList);
             chatsStore.setState(state);
         });
         this.onStart();
@@ -53,6 +52,8 @@ public class ChatSelector extends JPanel {
             state.setChatList(users);
             chatsStore.setState(state);
         } catch (IOException | ClassNotFoundException e) {
+            System.out.println("New fucking exception");
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
