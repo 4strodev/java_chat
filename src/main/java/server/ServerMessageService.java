@@ -2,12 +2,11 @@ package server;
 
 import shared.connection.Connection;
 import server.connection.OnConnectionCallback;
-import server.message.MessagePacketData;
+import shared.messages.MessagePacketData;
 import server.message.OnMessageCallback;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;

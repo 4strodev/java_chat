@@ -1,8 +1,10 @@
 package server;
 
-import server.message.MessagePacketData;
+import shared.messages.BroadcastMessageData;
+import shared.messages.MessagePacketData;
 import shared.connection.Connection;
 import shared.connection.ConnectionPacketData;
+import shared.messages.MessageType;
 import shared.messages.SendMessageData;
 import shared.users.User;
 
@@ -42,7 +44,7 @@ public class Server {
 
     private void onMessage(Connection connection, MessagePacketData messagePacketData) {
         switch (messagePacketData.messageType()) {
-            case MessagePacketData.CLIENT_REQUEST_CONNECTED_USERS -> {
+            case MessageType.CLIENT_REQUEST_CONNECTED_USERS -> {
                 var users = this.connectedUsers.values().stream().map(User::nickName).toList();
                 try {
                     connection.send(users);
@@ -50,13 +52,11 @@ public class Server {
                     System.out.println(e.getMessage());
                     connection.close();
                 }
-                this.broadcast(new MessagePacketData(MessagePacketData.SERVER_USER_LIST_UPDATED, new ArrayList<>(users)));
+                this.broadcast(new MessagePacketData(MessageType.SERVER_USER_LIST_UPDATED, new ArrayList<>(users)));
             }
-            case MessagePacketData.CLIENT_NEW_MESSAGE -> {
-                // TODO send message to desired client
+            case MessageType.CLIENT_NEW_MESSAGE -> {
                 var messageData = (SendMessageData) messagePacketData.data();
                 this.logger.log("New message from: " + messageData.sender());
-                System.out.println(messageData);
                 var user = connectedUsers.get(messageData.who());
                 if (user == null) {
                     throw new RuntimeException("User not found");
@@ -65,13 +65,33 @@ public class Server {
                 try {
                     user.notificationsConnection()
                             .send(new MessagePacketData(
-                                    MessagePacketData.SERVER_NEW_INCOMING_MESSAGE,
+                                    MessageType.SERVER_NEW_INCOMING_MESSAGE,
                                     messageData
                             ));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 logger.log(String.format("Message from %s sent to %s", messageData.sender(), messageData.who()));
+            }
+            case MessageType.CLIENT_BROADCAST_MESSAGE -> {
+                var messageData = (BroadcastMessageData) messagePacketData.data();
+                this.logger.log("New message from: " + messageData.sender());
+                for(var user : connectedUsers.values()) {
+                    if (user.nickName().equals(messageData.sender())) {
+                        continue;
+                    }
+
+                    try {
+                        user.notificationsConnection()
+                                .send(new MessagePacketData(
+                                        MessageType.SERVER_NEW_BROADCAST_MESSAGE,
+                                        messageData
+                                ));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    logger.log(String.format("Message from %s sent to %s", messageData.sender(), user.nickName()));
+                }
             }
             default -> {
                 System.out.println("Unexpected message type");

@@ -3,7 +3,9 @@ package client;
 import client.screens.Component;
 import client.store.ChatsStore;
 import com.formdev.flatlaf.FlatLightLaf;
-import server.message.MessagePacketData;
+import shared.messages.BroadcastMessageData;
+import shared.messages.MessagePacketData;
+import shared.messages.MessageType;
 import shared.messages.SendMessageData;
 
 import javax.swing.*;
@@ -26,15 +28,20 @@ public class ClientApp {
 
         ClientMessagingService.getInstance().onMessage((connection, messagePacketData) -> {
             switch (messagePacketData.messageType()) {
-                case MessagePacketData.SERVER_USER_LIST_UPDATED -> {
+                case MessageType.SERVER_USER_LIST_UPDATED -> {
                     var state = this.chatsStore.snapshot();
                     ArrayList<String> chatList = (ArrayList<String>) messagePacketData.data();
                     state.setChatList(chatList);
                     this.chatsStore.setState(state);
                 }
-                case MessagePacketData.SERVER_NEW_INCOMING_MESSAGE -> {
-                    System.out.println("New message!!!");
+                case MessageType.SERVER_NEW_INCOMING_MESSAGE -> {
                     var messageData = (SendMessageData) messagePacketData.data();
+                    var state = ChatsStore.getInstance().snapshot();
+                    state.addMessage(messageData.sender(), messageData.sender() + ": " + messageData.message());
+                    this.chatsStore.setState(state);
+                }
+                case MessageType.SERVER_NEW_BROADCAST_MESSAGE -> {
+                    var messageData = (BroadcastMessageData) messagePacketData.data();
                     var state = ChatsStore.getInstance().snapshot();
                     state.addMessage(messageData.sender(), messageData.sender() + ": " + messageData.message());
                     this.chatsStore.setState(state);
