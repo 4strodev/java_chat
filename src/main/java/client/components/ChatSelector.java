@@ -8,13 +8,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
-public class AvailableChatsList extends JPanel {
+public class ChatSelector extends JPanel {
     ClientMessagingService clientMessagingService = ClientMessagingService.getInstance();
     UserStore userStore = UserStore.getInstance();
     ChatsStore chatsStore = ChatsStore.getInstance();
     JComboBox<String> chatSelector = new JComboBox<>();
     private JLabel nicknameLabel = new JLabel();
-    public AvailableChatsList() {
+    public ChatSelector() {
         this.setLayout(new GridBagLayout());
         var constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.NONE;
